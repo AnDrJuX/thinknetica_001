@@ -1,10 +1,10 @@
 puts "Настало время узнать всё про твой треугольник!"
 puts "Какова длина первой его стороны?"
-a = gets.chomp.to_i
+a = gets.chomp.to_f
 puts "Какова длина второй стороны?"
-b = gets.chomp.to_i
+b = gets.chomp.to_f
 puts "Какова длина третьей стороны?"
-c = gets.chomp.to_i
+c = gets.chomp.to_f
 
 all_sides = [a,b,c].sort
 
