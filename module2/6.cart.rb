@@ -1,18 +1,22 @@
 cart = {}
 prod_total = 0.0
 total = 0.0
+answer = nil
 
-puts "Что вы купили?"
-answer = gets.chomp.downcase
-while answer != 'стоп' do
+loop do
+  puts "Что вы купили?"
+  answer = gets.chomp.downcase
+  break if answer == 'стоп'
   prod = answer
+  while cart[prod] != nil
+    puts "Вы уже добавили #{prod}, введите что-нибудь другое."
+    prod = gets.chomp.downcase
+  end
   puts "Сколько стоил #{prod}?"
   price = gets.chomp.to_f
   puts "Сколько штук #{prod} вы купили?"
-  count = gets.chomp.to_f
+  count = gets.chomp.to_i
   cart[prod] = {price => count}
-  puts "Что еще?"
-  answer = gets.chomp.downcase
 end
 
 puts "------------------------\nЗначит вы купили:"
