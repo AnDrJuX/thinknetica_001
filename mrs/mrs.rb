@@ -1,46 +1,52 @@
+# *************************************** Station
 class Station
-
-  @@trains = {}
-
   def initialize(name)
     @name = name
+    @trains = []
   end
 
-  def come_train(train)
-    @@trains[:train] = train.type
+  def take_train(train)
+    @trains.push(train)
   end
 
-  def trains
-    @@trains.each_char do |train, type|
-      puts "#{train} is #{type}"
+  def send_train(train)
+    @trains.delete(train)
+    train.station = nil
+  end
+
+  def show_trains(type=nil)
+    @trains.each do |train|
+      puts "#{train.number}" if type == train.type || type?
     end
   end
-
-  def trains_with_type(trains_type)
-    @@trains.each_char do |train, type|
-      if trains_type == type
-        puts "#{train} is #{type}"
-      end
-    end
-  end
-
-  def send_train
-
-  end
-
 end
 
+# *************************************** Route
 class Route
 
   def initialize(from, to)
-    @from = from
-    @to = to
+    @stations = [from, to]
+  end
+
+  def add_station(station)
+    @stations.insert(-2, station)
+  end
+
+  def delete_station(station)
+    @stations.delete(station)
+  end
+
+  def show_stations
+    @stations.each |station| do
+      puts station.name
+    end
   end
 
 end
 
+# *************************************** Train
 class Train
-  attr_accessor :speed
+  attr_accessor :speed, :wagons, :route, :station
   Type = [:passanger, :cargo]
 
   def initialize(number, type, wagons)
@@ -51,15 +57,15 @@ class Train
   end
 
   def speed_up(speed)
-    @@speed = speed
+    self.speed = speed
   end
 
   def current_speed
-    puts @@speed
+    puts @speed
   end
 
   def stop
-    @@speed = 0
+    self.speed = 0
   end
 
   def wagons_count
@@ -67,7 +73,7 @@ class Train
   end
 
   def hookup
-    if @speed = 0
+    if self.speed == 0
       @wagons +=1
     else
       puts 'Остановите поезд, что бы прицепить вагон!'
@@ -75,11 +81,23 @@ class Train
   end
 
   def uncoupling
-    if @speed = 0
+    if @wagons < 0
+      puts 'Нечего отцеплять.'
+    elsif self.speed == 0
       @wagons -=1
     else
       puts 'Остановите поезд, что бы отцепить вагон!'
     end
+  end
+
+  def get_route(route)
+    self.route = route
+    self.station = route.station.first
+    route.station.trains.push(self)
+  end
+
+  def go_forward
+
   end
 
 end
