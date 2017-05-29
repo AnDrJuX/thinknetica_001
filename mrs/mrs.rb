@@ -16,7 +16,7 @@ class Station
 
   def show_trains(type=nil)
     @trains.each do |train|
-      puts "#{train.number}" if type == train.type || type?
+      puts "Поезд №#{train.number}" if type == train.type || type.nil?
     end
   end
 end
@@ -37,7 +37,7 @@ class Route
   end
 
   def show_stations
-    @stations.each |station| do
+    @stations.each do |station|
       puts station.name
     end
   end
@@ -46,18 +46,17 @@ end
 
 # *************************************** Train
 class Train
-  attr_accessor :speed, :wagons, :route, :station
-  Type = [:passanger, :cargo]
+  attr_accessor :wagons, :route, :station, :speed, :number, :type
 
-  def initialize(number, type, wagons)
+  def initialize(number, type)
     @number = number
-    @wagons = wagons
-    @type = TYPE[type]
+    @wagons = 0
+    @type = type
     @speed = 0
   end
 
   def speed_up(speed)
-    self.speed = speed
+    @speed += speed
   end
 
   def current_speed
@@ -65,16 +64,17 @@ class Train
   end
 
   def stop
-    self.speed = 0
+    @speed = 0
   end
 
   def wagons_count
-    puts @wagons
+    puts "Поезд состоит из #{@wagons} вагонов"
   end
 
   def hookup
-    if self.speed == 0
+    if @speed.zero?
       @wagons +=1
+      puts "Вагон прицеплен."
     else
       puts 'Остановите поезд, что бы прицепить вагон!'
     end
@@ -83,21 +83,38 @@ class Train
   def uncoupling
     if @wagons < 0
       puts 'Нечего отцеплять.'
-    elsif self.speed == 0
+    elsif @speed.zero?
       @wagons -=1
+      puts "Вагон отцеплен."
     else
       puts 'Остановите поезд, что бы отцепить вагон!'
     end
   end
 
   def get_route(route)
-    self.route = route
-    self.station = route.station.first
-    route.station.trains.push(self)
+    @route = route
+    @current_station = 0
+    @route[@current_station].take_train(self)
   end
 
-  def go_forward
+  def move_next_station
+    next_station = route.station[@current_station+1]
+    route.station[@current_station].send_train(self)
+    route.station[@current_station] = next_station
+    next_station.take_train(self)
+  end
 
+  def move_prev_station
+    prev_station = route.station[@current_station-1]
+    route.station[@current_station].send_train(self)
+    route.station[@current_station] = next_station
+    next_station.take_train(self)
+  end
+
+  def show_stations
+    prev_station = route.station[@current_station-1]
+    next_station = route.station[@current_station+1]
+    puts "Поезд находится на станции #{@current_station}, позади осталась станция #{prev_station}, следующая станция #{next_station}."
   end
 
 end
