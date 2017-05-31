@@ -1,5 +1,7 @@
 # *************************************** Station
 class Station
+  attr_reader :stations, :name
+
   def initialize(name)
     @name = name
     @trains = []
@@ -23,6 +25,7 @@ end
 
 # *************************************** Route
 class Route
+  attr_accessor :stations
 
   def initialize(from, to)
     @stations = [from, to]
@@ -46,7 +49,7 @@ end
 
 # *************************************** Train
 class Train
-  attr_accessor :wagons, :route, :station, :speed, :number, :type
+  attr_accessor :wagons, :route, :station, :speed, :number, :type, :current_station
 
   def initialize(number, type)
     @number = number
@@ -93,28 +96,51 @@ class Train
 
   def get_route(route)
     @route = route
-    @current_station = 0
-    @route[@current_station].take_train(self)
+    @current_station_index = 0
+    current_station.take_train(self)
+    puts "Поезду назначен маршрут следования."
+  end
+
+  def current_station
+    @current_station = @route.stations[@current_station_index]
+  end
+
+  def next_station
+    @next_station = @route.stations[@current_station_index.next]
+  end
+
+  def previous_station
+    @previous_station = @route.stations[@current_station_index.pred]
   end
 
   def move_next_station
-    next_station = route.station[@current_station+1]
-    route.station[@current_station].send_train(self)
-    route.station[@current_station] = next_station
-    next_station.take_train(self)
+    if @current_station_index == @route.stations.length-1
+      puts 'Не получится. Поезд на последней станции.'
+    else
+      @current_station.send_train(self)
+      @current_station = next_station
+      @current_station_index+=1
+      @current_station.take_train(self)
+      puts "Поезд поехал на следующую станцию #{@current_station.name}"
+    end
   end
 
-  def move_prev_station
-    prev_station = route.station[@current_station-1]
-    route.station[@current_station].send_train(self)
-    route.station[@current_station] = next_station
-    next_station.take_train(self)
+  def move_previous_station
+    if @current_station_index > 0
+      puts 'Не получится. Поезд на первой станции.'
+    else
+      @current_station.send_train(self)
+      @current_station = previous_station
+      @current_station_index-=1
+      @current_station.take_train(self)
+      puts "Поезд поехал на предыдущую станцию #{current_station.name}"
+    end
   end
 
   def show_stations
-    prev_station = route.station[@current_station-1]
-    next_station = route.station[@current_station+1]
-    puts "Поезд находится на станции #{@current_station}, позади осталась станция #{prev_station}, следующая станция #{next_station}."
+    puts "Поезд находится на станции #{current_station.name}"
+    puts "Позади осталась станция #{previous_station.name}" if @current_station_index > 0
+    puts "Следующая станция #{next_station.name}." if @current_station_index < @route.stations.length-1
   end
 
 end
