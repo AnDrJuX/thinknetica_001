@@ -1,11 +1,8 @@
-class Wagons
+class Wagon
+  attr_accessor :type
 
-end
-
-class PassengerWagons < Wagons
-
-end
-
-class CargoWagons < Wagons
+  def type
+    @type = self.class.name
+  end
 
 end

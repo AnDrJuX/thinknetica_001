@@ -1,6 +1,6 @@
 class Train
-  attr_accessor :route, :speed, :number, :type, :station
-  attr_reader :current_station
+  attr_accessor :route, :speed, :number, :station
+  attr_reader :current_station, :type
 
   def initialize(number, type)
     @number = number
@@ -35,10 +35,10 @@ class Train
   end
 
   def uncoupling(wagon)
-    if @wagons.empty?
-      puts 'Нечего отцеплять.'
+    if @wagons.include?(wagon)
+      puts 'Этот вагон не прицеплен к поезду.'
     elsif @speed.zero?
-      @wagons.push(wagon)
+      @wagons.delete(wagon)
       puts "Вагон #{wagon} отцеплен."
     else
       puts 'Остановите поезд, что бы отцепить вагон!'
@@ -98,15 +98,5 @@ class Train
   def previous_station
     @previous_station = @route.stations[@current_station_index.pred]
   end
-
-
-end
-
-
-class PassengerTrain < Train
-
-end
-
-class CargoTrain < Train
 
 end
